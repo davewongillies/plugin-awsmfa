@@ -42,14 +42,14 @@ function awsmfa
         if __awsmfa_test_expiry
             __awsmfa_clear_variables
 
-            set account (awk "/\[$argv\]/,/^\$/ { if (\$1 == \"account_id\") { print \$3 }}" ~/.aws/credentials)
-            set username (awk "/\[$argv\]/,/^\$/ { if (\$1 == \"username\") { print \$3 }}" ~/.aws/credentials)
+            set account (awk "/\[$profile\]/,/^\$/ { if (\$1 == \"account_id\") { print \$3 }}" ~/.aws/credentials)
+            set username (awk "/\[$profile\]/,/^\$/ { if (\$1 == \"username\") { print \$3 }}" ~/.aws/credentials)
             set mfarn "arn:aws:iam::$account:mfa/$username"
 
             echo "Please enter your MFA token for $mfarn:"
             read -l mfa_token
 
-            set aws_cli (aws --profile=$argv sts get-session-token \
+            set aws_cli (aws --profile=$profile sts get-session-token \
             --serial-number="$mfarn" \
             --token-code=$mfa_token \
             --duration-seconds $duration \
