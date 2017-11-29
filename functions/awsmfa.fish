@@ -16,10 +16,10 @@ function __awsmfa_test_expiry
 end
 
 function __awsmfa_clear_variables
-    set -gu AWS_SESSION_EXPIRY
-    set -gu AWS_ACCESS_KEY_ID
-    set -gu AWS_SECRET_ACCESS_KEY
-    set -gu AWS_SESSION_TOKEN
+    set -gu AWS_SESSION_EXPIRY;    set -Uu AWS_SESSION_EXPIRY
+    set -gu AWS_ACCESS_KEY_ID;     set -Uu AWS_ACCESS_KEY_ID
+    set -gu AWS_SECRET_ACCESS_KEY; set -Uu AWS_SECRET_ACCESS_KEY
+    set -gu AWS_SESSION_TOKEN;     set -Uu AWS_SESSION_TOKEN
 end
 
 function awsmfa
