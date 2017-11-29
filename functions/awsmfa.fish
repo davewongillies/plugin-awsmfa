@@ -1,6 +1,4 @@
 function __awsmfa_test_expiry
-    set -g token_expired true
-
     if test $AWS_SESSION_EXPIRY
         # Currently only compatible with GNU date
         set now (date +%s)
@@ -8,11 +6,13 @@ function __awsmfa_test_expiry
 
         if [ $now -lt $expiry ]
             echo "AWS_SESSION_TOKEN is still valid but will expire at $AWS_SESSION_EXPIRY"
-            set -g token_expired false
+            return 1
         else
             echo "AWS_SESSION_TOKEN expired at $AWS_SESSION_EXPIRY"
         end
     end
+
+    return 0
 end
 
 function __awsmfa_clear_variables
@@ -38,9 +38,8 @@ function awsmfa
     if not fgrep -q "[$profile]" ~/.aws/credentials
         echo "Please specify a valid profile."
     else
-        __awsmfa_test_expiry
 
-        if [ $token_expired = true ]
+        if __awsmfa_test_expiry
             __awsmfa_clear_variables
 
             set account (awk "/\[$argv\]/,/^\$/ { if (\$1 == \"account_id\") { print \$3 }}" ~/.aws/credentials)
