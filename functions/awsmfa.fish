@@ -56,8 +56,7 @@ function awsmfa
             --output text \
             --query \
 'Credentials | join (`;`,values({ AccessKeyId: join(``, [`set -Ux AWS_ACCESS_KEY_ID `,AccessKeyId]), SecretAccessKey:join(``, [`set -Ux AWS_SECRET_ACCESS_KEY `,SecretAccessKey]), SessionToken:join(``, [`set -Ux AWS_SESSION_TOKEN `,SessionToken]), Expiration:join(``, [`set -Ux AWS_SESSION_EXPIRY `,Expiration]) }))' )
-
-            fish -c $aws_cli
+            test $status -eq 0; and fish -c $aws_cli
         end
     end
 end
