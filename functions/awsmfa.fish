@@ -47,8 +47,8 @@ function awsmfa
             set username (awk "/\[$profile\]/,/^\$/ { if (\$1 == \"username\") { print \$3 }}" ~/.aws/credentials)
             set mfarn "arn:aws:iam::$account:mfa/$username"
 
-            echo "Please enter your MFA token for $mfarn:"
-            read -l mfa_token
+            echo "Please enter your AWS MFA token for $mfarn:"
+            read -p "set_color yellow; echo -n token; set_color normal; echo '> '" -l mfa_token
 
             set aws_cli (aws --profile=$profile sts get-session-token \
             --serial-number="$mfarn" \
