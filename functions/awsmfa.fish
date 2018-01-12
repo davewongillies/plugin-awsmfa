@@ -20,6 +20,7 @@ function __awsmfa_clear_variables
     set -gu AWS_ACCESS_KEY_ID;     set -Uu AWS_ACCESS_KEY_ID
     set -gu AWS_SECRET_ACCESS_KEY; set -Uu AWS_SECRET_ACCESS_KEY
     set -gu AWS_SESSION_TOKEN;     set -Uu AWS_SESSION_TOKEN
+    set -gu AWS_SECURITY_TOKEN;    set -Uu AWS_SECURITY_TOKEN
 end
 
 function awsmfa
@@ -55,7 +56,7 @@ function awsmfa
             --duration-seconds $duration \
             --output text \
             --query \
-'Credentials | join (`;`,values({ AccessKeyId: join(``, [`set -Ux AWS_ACCESS_KEY_ID `,AccessKeyId]), SecretAccessKey:join(``, [`set -Ux AWS_SECRET_ACCESS_KEY `,SecretAccessKey]), SessionToken:join(``, [`set -Ux AWS_SESSION_TOKEN `,SessionToken]), Expiration:join(``, [`set -Ux AWS_SESSION_EXPIRY `,Expiration]) }))' )
+'Credentials | join (`;`,values({ AccessKeyId: join(``, [`set -Ux AWS_ACCESS_KEY_ID `,AccessKeyId]), SecretAccessKey:join(``, [`set -Ux AWS_SECRET_ACCESS_KEY `,SecretAccessKey]), SessionToken:join(``, [`set -Ux AWS_SESSION_TOKEN `,SessionToken]), SessionToken:join(``, [`set -Ux AWS_SECURITY_TOKEN `,SessionToken]), Expiration:join(``, [`set -Ux AWS_SESSION_EXPIRY `,Expiration]) }))' )
             test $status -eq 0; and fish -c $aws_cli
         end
     end
