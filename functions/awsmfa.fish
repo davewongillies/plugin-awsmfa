@@ -1,8 +1,8 @@
 function __awsmfa_test_expiry
     if test $AWS_SESSION_EXPIRY
 
-        set now (ruby -e "require 'time'; puts Time.now.to_i")
-        set expiry (ruby -e "require 'time'; puts Time.iso8601('$AWS_SESSION_EXPIRY').to_i")
+        set now (date +'%s')
+        set expiry (date -j -f "%FT%TZ" "$AWS_SESSION_EXPIRY" +%s)
 
         if [ $now -lt $expiry ]
             echo "AWS_SESSION_TOKEN is still valid but will expire at $AWS_SESSION_EXPIRY"
@@ -36,16 +36,16 @@ function awsmfa
         set profile $argv[1]
     end
 
-    if not fgrep -q "[$profile]" ~/.aws/credentials
+    if not fgrep -q "[profile $profile]" ~/.aws/config
         echo "Please specify a valid profile."
     else
 
         if __awsmfa_test_expiry
-            __awsmfa_clear_variables
+            __awsmfa_clear_variables 2>/dev/null
 
-            set account (awk "/\[$profile\]/,/^\$/ { if (\$1 == \"account_id\") { print \$3 }}" ~/.aws/credentials)
-            set username (awk "/\[$profile\]/,/^\$/ { if (\$1 == \"username\") { print \$3 }}" ~/.aws/credentials)
-            set mfarn "arn:aws:iam::$account:mfa/$username"
+            set mfarn (awk "/\[profile $profile\]/,/^\$/ { if (/mfa_serial/) { print \$3 }}" ~/.aws/config)
+            set account (echo $mfarn | awk -F[:/] "{ print \$5}")
+            set username (echo $mfarn | awk -F[:/] "{ print \$7}")
 
             echo "Please enter your AWS MFA token for $mfarn:"
             read -p "set_color yellow; echo -n token; set_color normal; echo '> '" -l mfa_token
